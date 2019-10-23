@@ -14,6 +14,7 @@ Block::Block(string Genesis) {
 Block::Block(const vector<Transaction> &TransactionsIn) : _Transactions(TransactionsIn) {
     _Nonce = -1;
     _Difficulty = 3;
+    _Version = "v0.1";
     BuildMerkleRoot();
     _Timestamp = time(nullptr);
 }
