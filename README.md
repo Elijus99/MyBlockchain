@@ -27,3 +27,10 @@ Sukurkite "centralizuotą" blokų grandinę (blockchain'ą) ir susimuliuokite bl
 - Merkle Root Hash
 - Timestamp
 - Previous Block Hash
+
+
+## Changelog
+
+### [v0.1](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.1)
+
+- First program version
