@@ -31,6 +31,6 @@ Sukurkite "centralizuotą" blokų grandinę (blockchain'ą) ir susimuliuokite bl
 
 ## Changelog
 
-### [v0.1](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.1)
+### [v0.1](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.1) - (2019-10-23)
 
 - First program version
