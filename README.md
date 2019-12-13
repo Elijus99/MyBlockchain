@@ -35,6 +35,12 @@ Sukurkite "centralizuotą" blokų grandinę (blockchain'ą) ir susimuliuokite bl
 
 - First program version
 
+### [v0.1.5](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.1.5) - (2019-12-12)
+
+Added transactions validation:
+1. Balance checking: Checks if sender has enough coins to do the transaction.
+2. Transaction hash checking: checks if transaction was not forged while travelling to the transactions pool.
+
 ### [v0.2 && v0.3](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.3)
 
 Improved block mining process:
