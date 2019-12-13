@@ -9,6 +9,7 @@ class Blockchain {
 public:
     Blockchain();
     void AddBlock(Block newBlock);
+    int getBlockWinnerID();
 private:
     vector<Block> _Chain;
     Block _GetLastBlock() const;

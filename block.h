@@ -13,20 +13,23 @@ using std::vector;
 class Block {
 public:
     Block(string Genesis);
-    Block(const vector<Transaction> &TransactionsIn);
+    Block(const vector<vector<Transaction>> &TransactionsIn);
     string prevHash;
     string GetHash();
     void MineBlock();
     void BuildMerkleRoot();
+    int getWinnerID();
 private:
     size_t _Nonce;
     string _Hash;
     string _Version;
     time_t _Timestamp;
+    vector<string> _MerkleRoots;
     string _MerkleRoot;
     size_t _Difficulty;
     string _CalculateHash() const;
-    vector<Transaction> _Transactions;
+    vector<vector<Transaction>> _Transactions;
+    int _WinnerID;
 };
 
 #endif

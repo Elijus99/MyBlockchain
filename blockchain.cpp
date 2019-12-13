@@ -14,3 +14,6 @@ void Blockchain::AddBlock(Block newBlock) {
 Block Blockchain::_GetLastBlock() const {
     return _Chain.back();
 }
+int Blockchain::getBlockWinnerID() {
+    return _Chain.back().getWinnerID();
+}

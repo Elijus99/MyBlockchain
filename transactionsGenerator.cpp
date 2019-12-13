@@ -8,28 +8,33 @@ Transaction GenerateTransaction(vector<user> users, double minTran, double maxTr
     std::uniform_real_distribution <double> genDouble(minTran, maxTran);
     Transaction temp;
     do {
-        temp.sender_id = std::to_string(genInt(mt));
-        temp.receiver_id = std::to_string(genInt(mt));
+        temp.sender_id = genInt(mt);
+        temp.receiver_id = genInt(mt);
     } while (temp.sender_id == temp.receiver_id);
+    temp.sender = users[temp.sender_id].public_key;
+    temp.receiver = users[temp.receiver_id].public_key;
     temp.value = genDouble(mt);
-    temp.transaction_id = hash(users[std::stoi(temp.sender_id)].public_key + " sent " + users[std::stoi(temp.receiver_id)].public_key + " " + std::to_string(temp.value));
+    temp.transaction_id = hash(temp.sender + " sent " + temp.receiver + " " + std::to_string(temp.value));
     return temp;
 }
 vector<Transaction> GenerateTransactionsPool(vector<user> users, size_t count, double minTran, double maxTran)
 {
     vector<Transaction> TransactionsPool;
     for (size_t i = 0; i < count; i++) {
-        TransactionsPool.push_back(GenerateTransaction(users, minTran, maxTran));
+        Transaction temp = GenerateTransaction(users, minTran, maxTran);
+        TransactionsPool.push_back(temp);
     }
     return TransactionsPool;
 }
 void GenerateTransactionsPoolFile(const string &fileName, vector<user> users, size_t count, double minTran, double maxTran)
 {
     std::ofstream out(fileName);
-    for (size_t i = 0; i < count; i++) {
-        Transaction temp;
+    Transaction temp;
+    temp = GenerateTransaction(users, minTran, maxTran);
+    out << " " << temp.sender_id << " " << temp.sender << " " << temp.receiver_id << " " << temp.receiver << " " << std::to_string(temp.value) << " " << temp.transaction_id;
+    for (size_t i = 1; i < count; i++) {
         temp = GenerateTransaction(users, minTran, maxTran);
-        out << temp.sender_id << " " << temp.receiver_id << " " << std::to_string(temp.value) << " " << temp.transaction_id << std::endl;
+        out << "\n" << " " << temp.sender_id << " " << temp.sender << " " << temp.receiver_id << " " << temp.receiver << " " << std::to_string(temp.value) << " " << temp.transaction_id;
     }
 }
 vector<Transaction> ReadTransactionsPoolFile(const string& fileName)
@@ -38,34 +43,40 @@ vector<Transaction> ReadTransactionsPoolFile(const string& fileName)
     Transaction temp;
     std::ifstream in(fileName);
     while (!in.eof()) {
-        in >> temp.sender_id >> temp.receiver_id >> temp.value >> temp.transaction_id;
+        in >> temp.sender_id >> temp.sender >> temp.receiver_id >> temp.receiver >> temp.value >> temp.transaction_id;
         transactions.push_back(temp);
     }
     return transactions;
 }
-vector<Transaction> SelectTransactions(vector<Transaction>& TransactionsPool, vector<user>& users)
+vector<vector<Transaction>> SelectTransactions(vector<Transaction>& TransactionsPool, vector<user>& users)
 {
+    vector<vector<Transaction>> candidates;
     vector<Transaction> BlockTransactions;
     std::random_device rd;
     std::mt19937 mt(rd());
-    while (BlockTransactions.size() != 100 && TransactionsPool.size() != 0) {
-        std::uniform_int_distribution <int> gen(0, (TransactionsPool.size()-1));
-        size_t i = gen(mt);
-        Transaction temp;
-        temp.sender_id = users[std::stoi(TransactionsPool[i].sender_id)].public_key;
-        temp.receiver_id = users[std::stoi(TransactionsPool[i].receiver_id)].public_key;
-        temp.value = TransactionsPool[i].value;
-        if (users[std::stoi(TransactionsPool[i].sender_id)].ECoin > temp.value) {
-            if (TransactionsPool[i].transaction_id == hash(temp.sender_id + " sent " + temp.receiver_id + " " + std::to_string(temp.value))) {
-                users[std::stoi(TransactionsPool[i].sender_id)].ECoin -= temp.value;
-                users[std::stoi(TransactionsPool[i].receiver_id)].ECoin += temp.value;
-                BlockTransactions.push_back(temp);
+    for (int i = 0; i < 5; i++) {
+        vector<Transaction> temp = TransactionsPool;
+        while (BlockTransactions.size() != 100 && temp.size() != 0) {
+            std::uniform_int_distribution <int> gen(0, (temp.size() - 1));
+            size_t i = gen(mt);
+            if (users[temp[i].sender_id].ECoin > temp[i].value) {
+                if (temp[i].transaction_id == hash(temp[i].sender + " sent " + temp[i].receiver + " " + std::to_string(temp[i].value))) {
+                    BlockTransactions.push_back(temp[i]);
+                    temp.erase(temp.begin() + i);
+                }
+                else {
+                    cout << "A forged transaction was found and deleted" << endl;
+                    TransactionsPool.erase(std::find(TransactionsPool.begin(), TransactionsPool.end(), temp[i]));
+                    temp.erase(temp.begin() + i);
+                }
             }
             else {
-                cout << "A forged transaction was found" << endl;
+                TransactionsPool.erase(std::find(TransactionsPool.begin(), TransactionsPool.end(), temp[i]));
+                temp.erase(temp.begin() + i);
             }
         }
-        TransactionsPool.erase(TransactionsPool.begin() + i);
+        candidates.push_back(BlockTransactions);
+        BlockTransactions.clear();
     }
-    return BlockTransactions;
+    return candidates;
 }
