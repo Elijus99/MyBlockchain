@@ -34,3 +34,10 @@ Sukurkite "centralizuotą" blokų grandinę (blockchain'ą) ir susimuliuokite bl
 ### [v0.1](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.1) - (2019-10-23)
 
 - First program version
+
+### [v0.2 && v0.3](https://github.com/Elijus99/MyBlockchain/releases/tag/v0.3)
+
+Improved block mining process:
+1. Five potential blocks are created.
+2. Each potential block takes turn in random order with 100000 attempts to find a hash value that would meet the `Difficulty target` requirement.
+3. If none of the 5 blocks meet the requirement, attempts per turn value gets increased by 100000. Process repeats until the fitting hash value is found.
